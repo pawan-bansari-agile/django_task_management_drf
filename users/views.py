@@ -11,8 +11,6 @@ from .permissions import IsAdminUserOrOwner
 from rest_framework import status
 
 class UserViewSet(viewsets.ModelViewSet):
-    # queryset = CustomUser.objects.filter(is_deleted=False)
-    # queryset = CustomUser.objects.all()
     queryset = CustomUser.objects.filter(is_deleted=False)
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
@@ -25,40 +23,6 @@ class UserViewSet(viewsets.ModelViewSet):
             return [IsAdminUser()]
         return super().get_permissions()
     
-    # def destroy(self, request, *args, **kwargs):
-    #     user = self.get_object()
-    #     user.delete()
-    #     return Response({'detail': 'User soft-deleted successfully.'})
-
-    # @action(detail=True, methods=['post'], serializer_class=UserRestoreSerializer)
-    # def restore(self, request, pk=None):
-    #     user = self.get_object()
-    #     user.restore()
-    #     return Response({'detail': 'User restored successfully.'})
-    
-    # @extend_schema(
-    #     request=inline_serializer(
-    #         name="UserCreateRequest",
-    #         fields={
-    #             'username': serializers.CharField(),
-    #             'email': serializers.EmailField(),
-    #             'first_name': serializers.CharField(),
-    #             'last_name': serializers.CharField(),
-    #             'role': serializers.ChoiceField(choices=[('user', 'User'), ('admin', 'Admin')]),
-    #             'password': serializers.CharField(write_only=True, style={'input_type': 'password'}),
-    #         }
-    #     ),
-    #     responses=UserSerializer
-    # )
-    # def create(self, request, *args, **kwargs):
-    #     return super().create(request, *args, **kwargs)
-
-    # def get_queryset(self):
-    #     user = self.request.user
-    #     if user.role == 'admin':
-    #         return CustomUser.objects.all()
-    #     return CustomUser.objects.filter(id=user.id)
-
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         if request.user.role != 'admin' and instance.id != request.user.id:

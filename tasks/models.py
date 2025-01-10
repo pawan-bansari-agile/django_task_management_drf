@@ -12,18 +12,10 @@ class Task(models.Model):
 
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
-    # assigned_to = models.ForeignKey(
-    #     settings.AUTH_USER_MODEL, 
-    #     on_delete=models.SET_NULL, 
-    #     null=True, 
-    #     blank=True,
-    #     limit_choices_to={'role': 'staff'}
-    # )
     assigned_to = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, limit_choices_to={'role': 'user'})
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft')
-    # attachments = models.FileField(upload_to='attachments/', null=True, blank=True)
     attachments = models.ManyToManyField('Attachment', blank=True)
 
     def archive(self):

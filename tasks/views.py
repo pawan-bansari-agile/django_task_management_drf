@@ -10,17 +10,11 @@ from .permissions import IsAdminUser, IsTaskAssignee, CanUpdateStatusToCompleted
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    # permission_classes = [IsAuthenticated]
 
     def get_permissions(self):
-        # if self.action in ['list', 'retrieve', 'filter_tasks', 'task_statistics']:
-        #     return [IsAuthenticated()]
-        # elif self.action in ['create', 'update', 'partial_update', 'destroy', 'archive_task']:
-        #     return [IsAdminOrAssignedUser()]
         if self.action in ['create', 'update', 'partial_update', 'destroy', 'archive_task']:
             return [IsAdminUser()]
         
-        # if self.action in ['retrieve', 'list', 'filter_tasks', 'task_statistics']:
         if self.action in ['retrieve', 'list']:
             return [IsAuthenticated()]
 
@@ -45,7 +39,6 @@ class TaskViewSet(viewsets.ModelViewSet):
         if assigned_user.role != 'user':
             raise ValueError("Tasks can only be assigned to users with the 'user' role.")
 
-        # serializer.save()
         task = serializer.save()
         for attachment in attachments:
             Attachment.objects.create(file=attachment, task=task)
@@ -78,11 +71,6 @@ class TaskViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], url_path='archive')
     def archive_task(self, request, pk=None):
         task = self.get_object()
-        # try:
-        #     task.archive()
-        #     return Response({"detail": "Task archived successfully."}, status=status.HTTP_200_OK)
-        # except ValueError as e:
-        #     return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         if task.status != 'completed':
             return Response({"detail": "Only completed tasks can be archived."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -101,34 +89,6 @@ class TaskViewSet(viewsets.ModelViewSet):
             )
         return super().update(request, *args, **kwargs)
 
-    # @action(detail=True, methods=['patch'], url_path='update-status')
-    # def update_status(self, request, pk=None):
-    #     task = self.get_object()
-    #     print('task', task)
-
-    #     # if request.user.role == 'user' and task.assigned_to != request.user:
-    #     #     return Response({"detail": "Not authorized."}, status=status.HTTP_403_FORBIDDEN)
-
-    #     # if task.status != 'ongoing':
-    #     #     return Response({"detail": "Only tasks with status 'ongoing' can be updated to 'completed'."}, status=status.HTTP_400_BAD_REQUEST)
-
-    #     if request.user.role == 'user':
-    #         print('inside the first if statement')
-    #         new_status = request.data.get('status')
-    #         if task.status not in ['ongoing', 'completed'] or new_status not in ['ongoing', 'completed']:
-    #             print('inside the second if statement')
-    #             return Response(
-    #                 {"detail": "You can only update the status between 'ongoing' and 'completed'."},
-    #                 status=status.HTTP_403_FORBIDDEN,
-    #             )
-
-    #     serializer = TaskStatusUpdateSerializer(task, data=request.data, partial=True)
-
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data, status=status.HTTP_200_OK)
-
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     @action(detail=True, methods=['patch'], url_path='update-status')
     def update_status(self, request, pk=None):
         try:
