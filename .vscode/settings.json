@@ -1,9 +1,14 @@
 {
     "cSpell.words": [
         "createsuperuser",
+        "gunicorn",
         "makemigrations",
+        "PYTHONDONTWRITEBYTECODE",
+        "PYTHONUNBUFFERED",
+        "runserver",
         "simplejwt",
         "viewsets",
-        "Virtualenv"
+        "Virtualenv",
+        "wsgi"
     ]
 }
